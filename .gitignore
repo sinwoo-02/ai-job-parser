@@ -1,0 +1,20 @@
+# Windows NTFS Alternate Data Streams (WSL)
+*:Zone.Identifier
+
+# Environment variables & secrets
+.env
+.env.*
+!.env.example
+
+# Node / Playwright
+node_modules/
+playwright-report/
+test-results/
+blob-report/
+playwright/.cache/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

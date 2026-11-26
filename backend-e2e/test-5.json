@@ -1,0 +1,248 @@
+{
+  "info": {
+    "_postman_id": "0a4527ea-0860-4165-8ec6-8752e96a6e18",
+    "name": "테스트 05(ID 2를 APPROVED로 변경)",
+    "description": "E2E 테스트: 관리자 로그인, 공고 승인(ID 2, 7), 전체 조회 검증 및 로그아웃 시나리오",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. 관리자 로그인 (Admin Login)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"1234\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/v1/auth/login",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "auth",
+            "login"
+          ]
+        },
+        "description": "관리자 로그인 요청입니다."
+      },
+      "response": []
+    },
+    {
+      "name": "2. 공고 승인 (ID: 2)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Status updated to APPROVED\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.data.status).to.eql(\"APPROVED\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"APPROVED\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/v1/jobs/2",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "jobs",
+            "2"
+          ]
+        },
+        "description": "ID 2번 채용 공고의 상태를 APPROVED로 변경합니다."
+      },
+      "response": []
+    },
+    {
+      "name": "3. 채용 공고 수정 (ID: 8 - Location)",
+      "event": [
+        {
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Location updated to 서울\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.data.location).to.eql(\"서울\");",
+              "});"
+            ]
+          },
+          "listen": "test"
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"location\": \"서울\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/v1/jobs/8",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "jobs",
+            "8"
+          ]
+        },
+        "description": "ID 8번 채용 공고의 지역(Location)을 '서울'로 수정합니다. 관리자 권한이 필요합니다."
+      },
+      "response": []
+    },
+    {
+      "name": "4. 채용 공고 전체 조회 (List Job Postings)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Verify Job Statuses and Locations\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    var jobs = jsonData.data.content;",
+              "    ",
+              "    // ID 2번 상태 확인 (APPROVED)",
+              "    var job2 = jobs.find(job => job.id === 2);",
+              "    if (job2) {",
+              "        pm.test(\"Job ID 2 is APPROVED\", function() {",
+              "            pm.expect(job2.status).to.eql(\"APPROVED\");",
+              "        });",
+              "    }",
+              "    ",
+              "    // ID 8번 지역 확인 (서울)",
+              "    var job8 = jobs.find(job => job.id === 8);",
+              "    if (job8) {",
+              "        pm.test(\"Job ID 8 location is 서울\", function() {",
+              "            pm.expect(job8.location).to.eql(\"서울\");",
+              "        });",
+              "    } else {",
+              "        console.warn(\"Job ID 8 not found in the current page.\");",
+              "    }",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/v1/jobs",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "jobs"
+          ]
+        },
+        "description": "전체 공고를 조회하고 ID 2, 7번의 상태가 APPROVED인지 확인합니다."
+      },
+      "response": []
+    },
+    {
+      "name": "5. 로그아웃 (Logout)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/v1/auth/logout",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "auth",
+            "logout"
+          ]
+        },
+        "description": "현재 세션을 무효화하고 로그아웃합니다."
+      },
+      "response": []
+    }
+  ]
+}

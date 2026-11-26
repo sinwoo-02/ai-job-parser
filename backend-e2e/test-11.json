@@ -1,0 +1,257 @@
+{
+  "info": {
+    "_postman_id": "930b3453-f123-4540-a524-d842f0466ecd",
+    "name": "테스트 13(로그인 없이 진행)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. PDF 업로드 (test.pdf)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              " pm.test(\"Status code is 403 Forbidden\", function () {\r",
+              "         pm.response.to.have.status(403);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "description": "PDF 파일 업로드 (test.pdf)",
+              "key": "file",
+              "type": "file",
+              "src": "test.pdf"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/v1/sources/pdf",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "sources",
+            "pdf"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "2. 승인 대기 공고 조회 (Get Pending - Unauthorized)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 403 Forbidden\", function () {\r",
+              "         pm.response.to.have.status(403);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/v1/admin/pending",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "pending"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "3. 채용 공고 ID 8 상태 APPROVED로 수정 (Update - Unauthorized)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              " pm.test(\"Status code is 403 Forbidden\", function () {\r",
+              "         pm.response.to.have.status(403);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"status\": \"APPROVED\" }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/v1/jobs/8",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "jobs",
+            "8"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "4. 채용 공고 ID 5 삭제 (Delete - Unauthorized)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 403 Forbidden\", function () {\r",
+              "         pm.response.to.have.status(403);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/v1/jobs/5",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "jobs",
+            "5"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "5. 전체 채용 공고 조회 (List All)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"No APPROVED jobs found (totalElements is 0)\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.data.totalElements).to.eql(0);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/v1/jobs",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "jobs"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "6. 채용 공고 ID 6 조회하기 (Get ID 6)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Access to PENDING job is restricted\", function () {",
+              "    // 현재 공고가 PENDING 상태이므로 일반 사용자 권한으로는 접근할 수 없어 403 혹은 404가 발생해야 합니다.",
+              "    pm.expect(pm.response.code).to.be.oneOf([403, 404]);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/v1/jobs/6",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "jobs",
+            "6"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
